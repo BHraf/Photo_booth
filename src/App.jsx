@@ -1,38 +1,47 @@
-import React, { useState , useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { createClient } from "@supabase/supabase-js";
-import './App.css'
+import "./App.css";
 import { TableReviews } from "./Mantine/TableReviews";
-import '@mantine/core/styles.css';
-import '@mantine/dates/styles.css';
-import { createTheme, MantineProvider , Button } from '@mantine/core';
+import "@mantine/core/styles.css";
+import "@mantine/dates/styles.css";
+import { createTheme, MantineProvider, Button } from "@mantine/core";
 import { StatsRing } from "./Mantine/StatsRing";
-import  image from "./BAF.png";
+import image from "./BAF.png";
 import { InputTooltip } from "./Mantine/InputTooltip";
-import { DateInput } from '@mantine/dates';
-const apiUrl = import.meta.env.VITE_API_URL;
+import { DateInput } from "@mantine/dates";
+//const apiUrl = import.meta.env.VITE_API_URL;
 const apiKey = import.meta.env.VITE_API_KEY;
-
 
 const theme = createTheme({
   colors: {
-    'ocean-blue' : ['#7AD1DD', '#5FCCDB', '#44CADC', '#2AC9DE', '#1AC2D9', '#11B7CD', '#09ADC3', '#0E99AC', '#128797', '#147885'],
+    "ocean-blue": [
+      "#7AD1DD",
+      "#5FCCDB",
+      "#44CADC",
+      "#2AC9DE",
+      "#1AC2D9",
+      "#11B7CD",
+      "#09ADC3",
+      "#0E99AC",
+      "#128797",
+      "#147885",
+    ],
   },
 });
-
 
 function App() {
   const [afficher, setAff] = useState(false);
   const [auth, setAuth] = useState(false);
   const [email, setEmail] = useState("");
   const [mdp, setMdp] = useState("");
-  
 
-  const [table, setTable]  = useState(null);
-  const [net, setnew]  = useState(null);
-  const [value, setValue] =useState(null);
-  const [value1, setValue1] =useState(null);
+  const [table, setTable] = useState(null);
+  const [net, setnew] = useState(null);
+  const [value, setValue] = useState(null);
+  const [value1, setValue1] = useState(null);
   const supabase = createClient(
-    'https://xnpnysxhokmbjlwlmmzs.supabase.co', apiKey
+    "https://xnpnysxhokmbjlwlmmzs.supabase.co",
+    apiKey
   );
 
   function sumPrices(data) {
@@ -48,7 +57,7 @@ function App() {
   function MaleCent(data) {
     let length = data.length;
     let male = 0;
-  
+
     data.map((item, i) => {
       if (item.GENDER) {
         let prc = item.GENDER == "Male" ? 1 : 0;
@@ -57,7 +66,7 @@ function App() {
     });
     let Bigger = length - 2 * male < 0;
     const result = (male * 100) / length;
-  const formattedResult = result.toFixed(2);
+    const formattedResult = result.toFixed(2);
     return formattedResult;
   }
   function getLastNumber(data) {
@@ -67,51 +76,45 @@ function App() {
     return data[data.length - 1].NUMBER;
   }
 
-
-  async function GettingData( email1 , mdp1 ) {
-
-    const test =email; 
+  async function GettingData(email1, mdp1) {
+    const test = email;
     const test1 = mdp.toString();
     const { data, error } = await supabase.auth.signInWithPassword({
       email: test,
       password: test1,
     });
-    if(data.user != null){
+    if (data.user != null) {
       const response = await supabase.from("PaymentMall").select();
 
-    setTable(response.data);
-    setnew(response.data);
-    setAff(true);
-    setAuth(true);
+      setTable(response.data);
+      setnew(response.data);
+      setAff(true);
+      setAuth(true);
+    } else {
+      console.log("tttdd");
     }
-    else{
-      console.log('tttdd')
-    }
-   /* const response = await supabase.from("Payment").select();
+    /* const response = await supabase.from("Payment").select();
     console.log(response.error);
     console.log(response.data);
     setTable(response.data);
     setAff(true);*/
-
-    
   }
 
   function filterByDate(vl) {
     setTable(net);
 
-    if(value&&vl){
+    if (value && vl) {
       const donn = net.filter((item) => {
         const itemTime = new Date(item.TIME);
 
-        return (CompareDates(itemTime, value) && CompareDates(vl, itemTime) );
+        return CompareDates(itemTime, value) && CompareDates(vl, itemTime);
       });
       setTable(donn);
       setValue(null);
-      setValue1(null)
+      setValue1(null);
     }
-    
   }
-  
+
   function CompareDates(itemTime, compareDate) {
     let x = itemTime.getFullYear();
     let y = compareDate.getFullYear();
@@ -139,79 +142,103 @@ function App() {
     }
   }
 
-  useEffect(()=>{
-    
-  },[email, mdp])
+  useEffect(() => {}, [email, mdp]);
 
-
-  
   return (
     <div className="container">
       <MantineProvider theme={theme}>
-      <div className="BackgroundImage">
-      {
-        !auth && 
-          <div className="BgAll" style={{'width':'400px' , 'textAlign':'start'}}>
+        <div className="BackgroundImage">
+          {!auth && (
+            <div
+              className="BgAll"
+              style={{ width: "400px", textAlign: "start" }}
+            >
               <img className="ImageSize" src={image}></img>
               <InputTooltip setMdp={setMdp} email={email} setEmail={setEmail} />
-            <div style={{'display':'flex' , 'justifyContent':'center' , 'alignItems': 'center' , 'height': '100px'}}>
-            <Button fullWidth size="md" color="ocean-blue"
-                onClick={()=> GettingData( email , mdp )}
-            >
-              Sign In
-            </Button>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  height: "100px",
+                }}
+              >
+                <Button
+                  fullWidth
+                  size="md"
+                  color="ocean-blue"
+                  onClick={() => GettingData(email, mdp)}
+                >
+                  Sign In
+                </Button>
+              </div>
             </div>
-          </div>
-      }
-    {auth && <div>
-      <div className="bltrst">
-      < StatsRing last={`${getLastNumber(table)}`} MaleCent={`${MaleCent(table)}`}  sumPrices={`${sumPrices(table)}`} />
-    
-    <div style={{'margin':'50px' , 'display' : 'flex', 'justifyContent': 'center'} }>
-    <div style={{ 'display' : 'flex', 'justifyContent': 'center' , 'gap':'50px' } }> 
-    <div style={{'width' :'300px' } }>
-    <DateInput
-    clearable={true}
-      value={value}
-      onChange={(vl) => {setValue(vl);
-       
-    } }
-      label="Filter By Date"
-      placeholder="from"
-    />
-    </div>
-    <div style={{'width' :'300px' } }>
-    <DateInput
-        clearable={true}
-      value={value1}
-      onChange={(vl) => {setValue1(vl);
-            filterByDate(vl)
-    } }
-    label="By selecting a range"
-    placeholder="to"
-    />
-    </div>
+          )}
+          {auth && (
+            <div>
+              <div className="bltrst">
+                <StatsRing
+                  last={`${getLastNumber(table)}`}
+                  MaleCent={`${MaleCent(table)}`}
+                  sumPrices={`${sumPrices(table)}`}
+                />
 
-    </div>
-  
-    </div></div>
-    {
-      afficher && <div className="Test_tables" >
-        <div>
-        <TableReviews data={table} />
+                <div
+                  style={{
+                    margin: "50px",
+                    display: "flex",
+                    justifyContent: "center",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      gap: "50px",
+                    }}
+                  >
+                    <div style={{ width: "300px" }}>
+                      <DateInput
+                        clearable={true}
+                        value={value}
+                        onChange={(vl) => {
+                          setValue(vl);
+                        }}
+                        label="Filter By Date"
+                        placeholder="from"
+                      />
+                    </div>
+                    <div style={{ width: "300px" }}>
+                      <DateInput
+                        clearable={true}
+                        value={value1}
+                        onChange={(vl) => {
+                          setValue1(vl);
+                          filterByDate(vl);
+                        }}
+                        label="By selecting a range"
+                        placeholder="to"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {afficher && (
+                <div className="Test_tables">
+                  <div>
+                    <TableReviews data={table} />
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
-        </div>
-
-    }
-      </div>}</div>
-
-    </MantineProvider>
+      </MantineProvider>
     </div>
-  )
+  );
 }
 
-export default App
-
+export default App;
 
 /*
 if(vl==null|| vl ==""){
